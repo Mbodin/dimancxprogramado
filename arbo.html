@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+
+<head>
+<title> Arbo de la vivo </title>
+<style>
+body{color:#ed6d42; background-color:#f0c3b4; text-align: center }
+canvas { background-color: #b4dcf0}
+</style>
+</head>
+
+<body>
+<h1>Arbo de la vivo
+</h1>
+<canvas width="500" height="500" id="desegnejo">
+</canvas>
+<script>
+desegnejo = document.getElementById("desegnejo");
+
+iloj = desegnejo.getContext("2d");
+
+iloj.rotate (Math.PI);
+
+iloj.translate (-250, -500);
+
+desegni_arbon = (tutprofundeco, profundeco, alteco, [r1, g1, b1], [r2, g2, b2]) => {
+    if (profundeco < 0) return;
+
+    mezo = (c1, c2) => (c2 + (profundeco / tutprofundeco) * (c1 - c2)) ;
+
+    iloj.fillStyle = "rgb(" + mezo (r1, r2) + ", " + mezo (g1, g2) + ", " + mezo (b1, b2) + ")";
+
+    iloj.fillRect (-5, 0, 10, alteco);
+    iloj.translate (0, alteco);
+
+    iloj.rotate (Math.PI/6);
+    desegni_arbon (tutprofundeco, profundeco - 1, alteco * 0.69, [r1, g1, b1], [r2, g2, b2]);
+    iloj.rotate (-Math.PI/6);
+
+    iloj.rotate (-Math.PI/6);
+    desegni_arbon (tutprofundeco, profundeco - 1, alteco * 0.71, [r1, g1, b1], [r2, g2, b2]);
+    iloj.rotate (Math.PI/6);
+
+    iloj.translate (0, -alteco);
+  }
+
+desegni_arbon (10, 10, 100, [79, 54, 3], [43, 161, 32]);
+
+</script>
+</body>
+
+</html>
+
