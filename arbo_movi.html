@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+
+<head>
+<title> Arbo de la vivo </title>
+<style>
+body{color:#ed6d42; background-color:#f0c3b4; text-align: center }
+canvas { background-color: #b4dcf0}
+</style>
+</head>
+
+<body>
+<h1>Arbo de la vivo
+</h1>
+<canvas width="500" height="500" id="desegnejo">
+</canvas>
+
+<p>Dekstre: <input type="range" min="0" max="100" value="60" id="dekstre"></input></p>
+<p>Maldekstre: <input type="range" min="0" max="100" value="70" id="maldekstre"></input></p>
+<p>Dekstra angulo: <input type="range" min="0" max="100" value="30" id="dekstra_angulo"></input></p>
+<p>Maldekstra angulo: <input type="range" min="0" max="100" value="20" id="maldekstra_angulo"></input></p>
+<p>Dikeco: <input type="range" min="0" max="100" value="90" id="dikeco"></input></p>
+<p>Origina dikeco: <input type="range" min="0" max="100" value="20" id="origina_dikeco"></input></p>
+
+<script>
+desegnejo = document.getElementById("desegnejo");
+
+dekstre = document.getElementById("dekstre");
+maldekstre = document.getElementById("maldekstre");
+dekstra_angulo = document.getElementById("dekstra_angulo");
+maldekstra_angulo = document.getElementById("maldekstra_angulo");
+dikeco_butono = document.getElementById("dikeco");
+origina_dikeco = document.getElementById("origina_dikeco");
+
+iloj = desegnejo.getContext("2d");
+
+desegni_arbon = (tutprofundeco, profundeco, alteco, dikeco, [r1, g1, b1], [r2, g2, b2]) => {
+    if (profundeco < 0) return;
+
+    mezo = (c1, c2) => (c2 + (profundeco / tutprofundeco) * (c1 - c2)) ;
+
+    iloj.fillStyle = "rgb(" + mezo (r1, r2) + ", " + mezo (g1, g2) + ", " + mezo (b1, b2) + ")";
+
+    iloj.fillRect (-dikeco / 2, 0, dikeco, alteco + 2);
+    iloj.translate (0, alteco);
+
+    iloj.translate (-dikeco * (1 - dikeco_butono.value / 100) / 2, 0);
+    iloj.rotate ((Math.PI / 2) * dekstra_angulo.value / 100);
+    desegni_arbon (tutprofundeco, profundeco - 1, alteco * dekstre.value / 100, dikeco * dikeco_butono.value / 100, [r1, g1, b1], [r2, g2, b2]);
+    iloj.rotate (-(Math.PI / 2) * dekstra_angulo.value / 100);
+    iloj.translate (dikeco * (1 - dikeco_butono.value / 100) / 2, 0);
+
+    iloj.translate (dikeco * (1 - dikeco_butono.value / 100) / 2, 0);
+    iloj.rotate (-(Math.PI / 2) * maldekstra_angulo.value / 100);
+    desegni_arbon (tutprofundeco, profundeco - 1, alteco * maldekstre.value / 100, dikeco * dikeco_butono.value / 100, [r1, g1, b1], [r2, g2, b2]);
+    iloj.rotate ((Math.PI / 2) * maldekstra_angulo.value / 100);
+    iloj.translate (-dikeco * (1 - dikeco_butono.value / 100) / 2, 0);
+
+    iloj.translate (0, -alteco);
+  }
+
+draw = () => {
+    iloj.resetTransform ();
+    iloj.clearRect (0, 0, desegnejo.width, desegnejo.height);
+
+    iloj.rotate (Math.PI);
+    iloj.translate (-desegnejo.width / 2, -desegnejo.height);
+
+    desegni_arbon (10, 10, 100, origina_dikeco.value, [79, 54, 3], [43, 161, 32]);
+  }
+
+draw ();
+
+dekstre.oninput = draw;
+maldekstre.oninput = draw;
+dekstra_angulo.oninput = draw;
+maldekstra_angulo.oninput = draw;
+dikeco_butono.oninput = draw;
+origina_dikeco.oninput = draw;
+
+</script>
+</body>
+
+</html>
+
