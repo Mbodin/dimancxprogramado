@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+
+<head>
+<title> Arbo de la vivo </title>
+<style>
+body{color:#ed6d42; background-color:#f0c3b4; text-align: center }
+canvas { background-color: #b4dcf0}
+</style>
+</head>
+
+<body>
+<h1>Arbo de la vivo
+</h1>
+<canvas width="500" height="500" id="desegnejo">
+</canvas>
+
+<p>Dekstre: <input type="range" min="0" max="100" value="60" id="dekstre"></input></p>
+<p>Maldekstre: <input type="range" min="0" max="100" value="70" id="maldekstre"></input></p>
+<p>Dekstra angulo: <input type="range" min="0" max="100" value="30" id="dekstra_angulo"></input></p>
+<p>Maldekstra angulo: <input type="range" min="0" max="100" value="20" id="maldekstra_angulo"></input></p>
+<p>Dikeco: <input type="range" min="0" max="100" value="90" id="dikeco"></input></p>
+<p>Origina dikeco: <input type="range" min="0" max="100" value="20" id="origina_dikeco"></input></p>
+<p>Infanoj: <input type="range" min="1" max="4" value="2" id="infanoj"></input></p>
+<p>Hazardo: <input type="range" min="0" max="100" value="0" id="hazardo"></input></p>
+
+<script>
+desegnejo = document.getElementById("desegnejo");
+
+dekstre = document.getElementById("dekstre");
+maldekstre = document.getElementById("maldekstre");
+dekstra_angulo = document.getElementById("dekstra_angulo");
+maldekstra_angulo = document.getElementById("maldekstra_angulo");
+dikeco_butono = document.getElementById("dikeco");
+origina_dikeco = document.getElementById("origina_dikeco");
+infanoj = document.getElementById("infanoj");
+hazardo = document.getElementById("hazardo");
+
+iloj = desegnejo.getContext("2d");
+
+desegni_arbon = function (tutprofundeco, profundeco, alteco, dikeco, [r1, g1, b1], [r2, g2, b2]) {
+    if (profundeco < 0) return;
+
+    let hazarda = () => (1 - hazardo.value / 200 + Math.random () * (hazardo.value / 100));
+    let totinf = Math.floor ((+infanoj.value + 0.5) * hazarda());
+
+    let mezo = (c1, c2) => (c2 + (profundeco / tutprofundeco) * (c1 - c2));
+    let mezoi = (i, v1, v2) => (totinf == 1 ? hazarda () * ((+v1) + (+v2)) / 2 : (+v2) + hazarda () * (i / (totinf - 1)) * ((+v1) - (+v2)));
+
+    iloj.fillStyle = "rgb(" + mezo (r1, r2) + ", " + mezo (g1, g2) + ", " + mezo (b1, b2) + ")";
+
+    iloj.fillRect (-dikeco / 2, 0, dikeco, alteco + 2);
+    iloj.translate (0, alteco);
+
+    for (let i = 0; i < totinf; i++){
+      let sxovo = mezoi (i, -dikeco * (1 - dikeco_butono.value / 100) / 2, dikeco * (1 - dikeco_butono.value / 100) / 2);
+      let angulo = mezoi (i, (Math.PI / 2) * dekstra_angulo.value / 100, -(Math.PI / 2) * maldekstra_angulo.value / 100);
+
+      let trans = iloj.getTransform ();
+      iloj.translate (sxovo, 0);
+      iloj.rotate (angulo);
+      desegni_arbon (tutprofundeco, profundeco - 1, hazarda () * alteco * mezoi (i, dekstre.value, maldekstre.value) / 100, hazarda () * dikeco * dikeco_butono.value / 100, [r1, g1, b1], [r2, g2, b2]);
+      iloj.setTransform (trans);
+    }
+
+    iloj.translate (0, -alteco);
+  }
+
+draw = () => {
+    iloj.resetTransform ();
+    iloj.clearRect (0, 0, desegnejo.width, desegnejo.height);
+
+    iloj.rotate (Math.PI);
+    iloj.translate (-desegnejo.width / 2, -desegnejo.height);
+
+    let profundeco = 7;
+
+    desegni_arbon (profundeco, profundeco, 100, origina_dikeco.value, [79, 54, 3], [43, 161, 32]);
+  }
+
+draw ();
+
+dekstre.oninput = draw;
+maldekstre.oninput = draw;
+dekstra_angulo.oninput = draw;
+maldekstra_angulo.oninput = draw;
+dikeco_butono.oninput = draw;
+origina_dikeco.oninput = draw;
+infanoj.oninput = draw;
+hazardo.oninput = draw;
+
+</script>
+</body>
+
+</html>
+
