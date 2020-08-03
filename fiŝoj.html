@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+
+<head>
+<title> Fiŝoj </title>
+<style>
+body{color:#f58402; background-color:#fcf5f2; text-align: center }
+canvas { background-color: #05a5f5}
+</style>
+</head>
+
+<body>
+<h1>Fiŝoj
+</h1>
+<canvas width="800" height="800" id="desegnejo">
+</canvas>
+<script>
+desegnejo = document.getElementById("desegnejo");
+
+iloj = desegnejo.getContext("2d");
+
+iloj.rotate (Math.PI);
+
+birdoj = [];
+
+for (i = 0 ; i < 50; i++)
+	birdoj.push ({ grandeco: 40, koloro: "#061f47", poziciox: 800 * Math.random(), pozicioy: 800 * Math.random(), direkto: 2 * Math.PI * Math.random (), rapideco: 1 });
+
+
+desegni_birdon = birdo => {
+		iloj.resetTransform ();
+		iloj.fillStyle = birdo.koloro;
+		iloj.translate (birdo.poziciox, birdo.pozicioy);
+		iloj.rotate(birdo.direkto + Math.PI / 2);
+		iloj.fillRect (-5, - birdo.grandeco / 2, 10, birdo.grandeco);
+	}
+
+kvadrato = x => x * x;
+distanco = (birdo1, birdo2) => Math.sqrt(kvadrato(birdo1.poziciox - birdo2.poziciox) + kvadrato (birdo1.pozicioy - birdo2.pozicioy));
+
+movi_birdon = birdo => {
+		birdo.poziciox = birdo.poziciox + birdo.rapideco * Math.cos(birdo.direkto);
+		birdo.pozicioy = birdo.pozicioy + birdo.rapideco * Math.sin(birdo.direkto);
+
+
+		// aliaj
+		plejProksime = birdoj[0];
+		birdoj.forEach(aliabirdo => {
+				d = distanco (birdo, aliabirdo) ;
+				if (d > 0 && d < distanco (birdo, plejProksime)) plejProksime = aliabirdo;
+			});
+		d = distanco(plejProksime, birdo);
+
+		celo = 10 * (Math.random () - 0.5);
+		potenco = 0.05;
+
+		if (plejProksime != birdo){
+			if (d < 30) {
+				potenco = 0.1;
+				celo = Math.PI + Math.asin((plejProksime.pozicioy-birdo.pozicioy) / d);
+			} else if (d < 60) celo = plejProksime.direkto;
+		}
+
+		// muroj
+		if (birdo.poziciox > desegnejo.width - 50) { potenco = 0.2; celo = Math.PI; }
+		if (birdo.pozicioy > desegnejo.height - 50) { potenco = 0.2; celo = - Math.PI / 2; }
+		if (birdo.poziciox < 50) { potenco = 0.2; celo = 0; }
+		if (birdo.pozicioy < 50) { potenco = 0.2; celo = Math.PI / 2; }
+		if (birdo.poziciox > desegnejo.width - 50 && birdo.pozicioy > desegnejo.height - 50) { potenco = 0.3; celo = - 3 * Math.PI / 4; }
+		if (birdo.poziciox > desegnejo.width - 50 && birdo.pozicioy < 50) { potenco = 0.3; celo = 3 * Math.PI / 4; }
+		if (birdo.poziciox < 50 && birdo.pozicioy > desegnejo.height - 50) { potenco = 0.3; celo = - Math.PI / 4; }
+		if (birdo.poziciox < 50 && birdo.pozicioy < 50) { potenco = 0.3; celo = Math.PI / 4; }
+
+		celo = (celo + 2 * Math.PI) % (2 * Math.PI);
+		birdo.direkto = (birdo.direkto + 2 * Math.PI) % (2 * Math.PI);
+		if (birdo.direkto > Math.PI){
+			celo = (celo + Math.PI) % (2 * Math.PI) - Math.PI;
+			birdo.direkto = (birdo.direkto + Math.PI) % (2 * Math.PI) - Math.PI;
+		}
+
+		if (birdo.direkto < celo)
+			birdo.direkto = birdo.direkto + potenco * Math.random();
+		else birdo.direkto = birdo.direkto - potenco * Math.random();
+
+		birdo.direkto = birdo.direkto + 0.03 * (Math.random() - 0.5);
+	}
+
+setInterval (() => {
+		iloj.resetTransform ();
+		iloj.clearRect (0, 0, desegnejo.width, desegnejo.height);
+		birdoj.forEach(movi_birdon);
+		birdoj.forEach(desegni_birdon);
+	}, 10);
+</script>
+</body>
+
+</html>
