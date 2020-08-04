@@ -23,6 +23,7 @@ canvas { background-color: #b4dcf0}
 <p>Origina dikeco: <input type="range" min="0" max="100" value="20" id="origina_dikeco"></input></p>
 <p>Infanoj: <input type="range" min="1" max="4" value="2" id="infanoj"></input></p>
 <p>Hazardo: <input type="range" min="0" max="100" value="0" id="hazardo"></input></p>
+<p>Speguligado: <input type="checkbox" id="speguligado"></input></p>
 
 <script>
 desegnejo = document.getElementById("desegnejo");
@@ -35,10 +36,11 @@ dikeco_butono = document.getElementById("dikeco");
 origina_dikeco = document.getElementById("origina_dikeco");
 infanoj = document.getElementById("infanoj");
 hazardo = document.getElementById("hazardo");
+speguligado = document.getElementById("speguligado");
 
 iloj = desegnejo.getContext("2d");
 
-desegni_arbon = function (tutprofundeco, profundeco, alteco, dikeco, [r1, g1, b1], [r2, g2, b2]) {
+desegni_arbon = (spegulo, tutprofundeco, profundeco, alteco, dikeco, [r1, g1, b1], [r2, g2, b2]) => {
     if (profundeco < 0) return;
 
     let hazarda = () => (1 - hazardo.value / 200 + Math.random () * (hazardo.value / 100));
@@ -52,14 +54,17 @@ desegni_arbon = function (tutprofundeco, profundeco, alteco, dikeco, [r1, g1, b1
     iloj.fillRect (-dikeco / 2, 0, dikeco, alteco + 2);
     iloj.translate (0, alteco);
 
+		if (speguligado.checked) spegulo = !spegulo;
+
     for (let i = 0; i < totinf; i++){
       let sxovo = mezoi (i, -dikeco * (1 - dikeco_butono.value / 100) / 2, dikeco * (1 - dikeco_butono.value / 100) / 2);
       let angulo = mezoi (i, (Math.PI / 2) * dekstra_angulo.value / 100, -(Math.PI / 2) * maldekstra_angulo.value / 100);
+			if (spegulo) angulo = - angulo;
 
       let trans = iloj.getTransform ();
       iloj.translate (sxovo, 0);
       iloj.rotate (angulo);
-      desegni_arbon (tutprofundeco, profundeco - 1, hazarda () * alteco * mezoi (i, dekstre.value, maldekstre.value) / 100, hazarda () * dikeco * dikeco_butono.value / 100, [r1, g1, b1], [r2, g2, b2]);
+      desegni_arbon (spegulo, tutprofundeco, profundeco - 1, hazarda () * alteco * mezoi (i, dekstre.value, maldekstre.value) / 100, hazarda () * dikeco * dikeco_butono.value / 100, [r1, g1, b1], [r2, g2, b2]);
       iloj.setTransform (trans);
     }
 
@@ -75,7 +80,7 @@ draw = () => {
 
     let profundeco = 7;
 
-    desegni_arbon (profundeco, profundeco, 100, origina_dikeco.value, [79, 54, 3], [43, 161, 32]);
+    desegni_arbon (false, profundeco, profundeco, 100, origina_dikeco.value, [79, 54, 3], [43, 161, 32]);
   }
 
 draw ();
@@ -88,6 +93,7 @@ dikeco_butono.oninput = draw;
 origina_dikeco.oninput = draw;
 infanoj.oninput = draw;
 hazardo.oninput = draw;
+speguligado.oninput = draw;
 
 </script>
 </body>

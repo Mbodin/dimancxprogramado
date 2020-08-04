@@ -24,7 +24,7 @@ iloj.rotate (Math.PI);
 birdoj = [];
 
 for (i = 0 ; i < 50; i++)
-	birdoj.push ({ grandeco: 40, koloro: "#061f47", poziciox: 800 * Math.random(), pozicioy: 800 * Math.random(), direkto: 2 * Math.PI * Math.random (), rapideco: 1 });
+	birdoj.push ({ grandeco: 40, koloro: "#061f47", poziciox: 800 * Math.random(), pozicioy: 800 * Math.random(), direkto: 2 * Math.PI * Math.random (), rapideco: 0.5 + 1.5 * Math.random () });
 
 
 desegni_birdon = birdo => {
@@ -52,7 +52,7 @@ movi_birdon = birdo => {
 		d = distanco(plejProksime, birdo);
 
 		celo = 10 * (Math.random () - 0.5);
-		potenco = 0.05;
+		potenco = 0.02;
 
 		if (plejProksime != birdo){
 			if (d < 30) {
@@ -73,7 +73,7 @@ movi_birdon = birdo => {
 
 		celo = (celo + 2 * Math.PI) % (2 * Math.PI);
 		birdo.direkto = (birdo.direkto + 2 * Math.PI) % (2 * Math.PI);
-		if (birdo.direkto > Math.PI){
+		if (birdo.direkto < Math.PI / 2 || birdo.direkto > 3 * Math.PI / 2){
 			celo = (celo + Math.PI) % (2 * Math.PI) - Math.PI;
 			birdo.direkto = (birdo.direkto + Math.PI) % (2 * Math.PI) - Math.PI;
 		}
