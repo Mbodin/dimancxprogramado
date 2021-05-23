@@ -80,15 +80,20 @@ function aldoniFamilion(verbo, f){
 			[b, r, g] = f(b, r, g);
 			return [r, g, b];
 		};
-	aldoniAgon(verbo + " la rugxan", rugxa);
+	aldoniAgon(verbo + " la ruĝan", rugxa);
 	aldoniAgon(verbo + " la verdan", verda);
 	aldoniAgon(verbo + " la bluan", blua);
 };
 
 aldoniAgon("Turni", (r, g, b) => [g, b, r]);
-aldoniFamilion("Forigi", (r, g, b) => [r, 0, 0]);
+aldoniAgon("Grizigi", (r, g, b) => { var a = (r + g + b) / 3; return [a, a, a]});
+aldoniFamilion("Forigi", (r, g, b) => [0, g, b]);
 aldoniFamilion("Inversi", (r, g, b) => [255 - r, g, b]);
-aldoniFamilion("Intensigi", (r, g, b) => [Math.min(2 * r, 255), g, b]);
+aldoniFamilion("Intensigi", (r, g, b) => [Math.min(1.2 * r, 255), g, b]);
+aldoniFamilion("Malintensigi", (r, g, b) => [r / 1.2, g, b]);
+aldoniFamilion("Atraktigi", (r, g, b) => [Math.min(r + g * 0.1 + b * 0.1, 255), g * 0.9, b * 0.9]);
+aldoniFamilion("Ternigi", (r, g, b) => [127 + (r - 127) / 2, g, b]);
+aldoniFamilion("Vivigi", (r, g, b) => [Math.max(0, Math.min(127 + (r - 127) * 2, 255)), g, b]);
 
 </script>
 
