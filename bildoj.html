@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+
+<head>
+<title>Manipulo kolorojn</title>
+</head>
+
+<p>
+<label for = "sendi">Sendi bildon:</label>
+<input type = "file" size = "65" id = "sendi" name = "sendi" />
+</p>
+
+<p>
+<button id = "rezulto">Prepari bildon</button>
+<a id = "elŝulti" style ="display: none;" target = "_blank">Elŝulti!</a>
+</p>
+
+<canvas id = "desegnejo" width = "500" height = "500"></canvas>
+
+<ul id = "agoj"></ul>
+
+<script>
+desegnejo = document.getElementById("desegnejo");
+desegnilo = desegnejo.getContext("2d");
+ligilo = document.getElementById("elŝulti");
+
+function elporti(){
+	var bildo = desegnejo.toDataURL("image/jpg");
+	
+	ligilo.setAttribute("href", bildo);
+	ligilo.setAttribute("style", "");
+};
+
+function desegni(){
+	var bildo = new Image();
+	var dosiero = document.getElementById("sendi").files[0];
+	var adreso = window.URL.createObjectURL(dosiero);
+	bildo.src = adreso;
+	bildo.onload = function(){
+			desegnejo.width = bildo.width || desegnejo.width;
+			desegnejo.height = bildo.height || desegnejo.height;
+			desegnilo.drawImage(bildo, 0, 0);
+			window.URL.revokeObjectURL(adreso);
+		}
+};
+
+function apliki(f){
+	for (var x = 0; x < desegnejo.width; x++){
+		for (var y = 0; y < desegnejo.height; y++){
+			var bildero = desegnilo.getImageData(x, y, 1, 1);
+			var r = f(bildero.data[0], bildero.data[1], bildero.data[2]);
+			bildero.data[0] = r[0];
+			bildero.data[1] = r[1];
+			bildero.data[2] = r[2];
+			desegnilo.putImageData(bildero, x, y);
+		}
+	}
+};
+
+document.getElementById("sendi").addEventListener("change", desegni);
+
+document.getElementById("rezulto").addEventListener("click", elporti);
+
+function aldoniAgon(nomo, f){
+	var li = document.createElement("li");
+	li.appendChild(document.createTextNode(nomo));
+	li.addEventListener("click", function(){ apliki(f) });
+	document.getElementById("agoj").appendChild(li);
+};
+
+function aldoniFamilion(verbo, f){
+	var rugxa = f;
+	var verda =
+		function(r, g, b){
+			[g, b, r] = f(g, b, r);
+			return [r, g, b];
+		};
+	var blua =
+		function(r, g, b){
+			[b, r, g] = f(b, r, g);
+			return [r, g, b];
+		};
+	aldoniAgon(verbo + " la rugxan", rugxa);
+	aldoniAgon(verbo + " la verdan", verda);
+	aldoniAgon(verbo + " la bluan", blua);
+};
+
+aldoniAgon("Turni", (r, g, b) => [g, b, r]);
+aldoniFamilion("Forigi", (r, g, b) => [r, 0, 0]);
+aldoniFamilion("Inversi", (r, g, b) => [255 - r, g, b]);
+aldoniFamilion("Intensigi", (r, g, b) => [Math.min(2 * r, 255), g, b]);
+
+</script>
+
+</html>
+
